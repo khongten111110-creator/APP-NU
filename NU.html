@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Quicksand:wght@400;600&family=Times+New+Roman&display=swap');
+    
+    body { background-color: #fdf2f8; font-family: 'Quicksand', sans-serif; }
+    h1, h2, h3, .brand-font { font-family: 'Playfair Display', serif; }
+    
+    .tab-active { border-bottom: 3px solid #db2777; color: #db2777; font-weight: bold; }
+    
+    /* Thiết kế riêng cho bản in PDF */
+    .contract-paper { 
+      padding: 30px 40px; 
+      background: white; 
+      width: 794px; 
+      max-width: 100%;
+      margin: auto; 
+      display: none;
+      font-family: 'Times New Roman', Times, serif; 
+      color: black;
+      box-sizing: border-box;
+    }
+    .pdf-header { text-align: center; margin-bottom: 15px; line-height: 1.3; }
+    .pdf-header h1 { font-size: 16px; font-weight: bold; margin: 0; font-family: 'Times New Roman', Times, serif;}
+    .pdf-header p { font-size: 14px; margin: 2px 0; }
+    .pdf-title { font-size: 18px; font-weight: bold; text-align: center; margin: 15px 0; }
+    
+    .info-line { display: flex; margin-bottom: 8px; font-size: 15px; align-items: flex-end;}
+    .info-label { white-space: nowrap; margin-right: 5px; }
+    .dotted-line { flex-grow: 1; border-bottom: 1px dotted #000; padding-bottom: 2px; min-height: 18px;}
+    
+    .med-table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; font-size: 14px;}
+    .med-table th, .med-table td { border: 1px solid #000; padding: 5px; text-align: center; vertical-align: top;}
+    .med-table td:first-child { text-align: left; }
+    
+    .pdf-footer { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 15px; font-size: 14px; }
+    .pdf-footer-left { width: 45%; text-align: left; line-height: 1.3; padding-left: 2px;}
+    .pdf-footer-right { width: 50%; text-align: center; }
+  </style>
+</head>
+<body class="pb-10">
+
+  <nav class="bg-white shadow-sm mb-6 sticky top-0 z-10 border-b border-pink-100 overflow-x-auto">
+    <div class="flex justify-around p-4 text-gray-500 min-w-max">
+      <button onclick="showTab('tab-contract')" id="btn-contract" class="tab-active py-2 px-4"><i class="fas fa-magic mr-2"></i>Hồ Sơ Khách Hàng</button>
+      <button onclick="showTab('tab-list')" id="btn-list" class="py-2 px-4"><i class="fas fa-users mr-2"></i>Danh Sách</button>
+      <button onclick="showTab('tab-reminder')" id="btn-reminder" class="py-2 px-4 relative"><i class="fas fa-calendar-alt mr-2"></i>Lịch Dặm Lại</button>
+      <button onclick="showTab('tab-stats')" id="btn-stats" class="py-2 px-4"><i class="fas fa-chart-line mr-2"></i>Doanh Thu</button>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto px-4">
+    
+    <!-- TAB TẠO PHIẾU (HỒ SƠ KHÁCH HÀNG) -->
+    <div id="tab-contract" class="tab-content">
+      <div class="bg-white p-8 rounded-2xl shadow-xl border border-pink-50">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl brand-font text-pink-700">Thông Tin Khách Hàng</h2>
+          <p class="text-sm text-gray-400">Điền đầy đủ thông tin để tạo hồ sơ và in PDF</p>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div><label class="text-xs text-gray-500 font-bold">Họ và tên</label><input type="text" id="name" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Địa chỉ</label><input type="text" id="address" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Ngày sinh</label><input type="date" id="dob" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Số điện thoại</label><input type="text" id="contact" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Tình trạng (Độc thân/Đã KH...)</label><input type="text" id="status" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Đăng ký dịch vụ</label><input type="text" id="service" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Giá tiền (VNĐ)</label><input type="text" id="total" oninput="formatPrice(this)" placeholder="Ví dụ: 1 000 000" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300 font-bold text-pink-700"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Tiền sử bệnh lý (Chung)</label><input type="text" id="history" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+          </div>
+
+          <!-- Khu vực thanh toán mới -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-pink-50 p-4 rounded-lg border border-pink-100">
+            <div>
+              <label class="text-xs text-gray-500 font-bold">Trạng thái thanh toán</label>
+              <select id="payType" onchange="toggleDeposit()" class="w-full p-2 border border-pink-200 rounded-lg outline-none bg-white">
+                <option value="Trả đủ">Trả đủ</option>
+                <option value="Đặt cọc">Đặt cọc</option>
+              </select>
+            </div>
+            <div id="depositDiv" class="hidden">
+              <label class="text-xs text-pink-600 font-bold">Số tiền cọc (VNĐ)</label>
+              <input type="text" id="deposit" oninput="formatPrice(this)" placeholder="Nhập số tiền khách cọc..." class="w-full p-2 border border-pink-300 rounded-lg outline-none focus:ring-2 focus:ring-pink-400 font-bold text-pink-600">
+            </div>
+          </div>
+
+          <div class="mt-6 border-t border-pink-100 pt-4">
+            <h3 class="font-bold text-pink-700 mb-3 text-sm">Bảng Khảo Sát Sức Khỏe:</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left border border-gray-200 rounded">
+                <thead class="bg-pink-50">
+                  <tr><th class="p-2 border border-gray-200">Tình trạng</th><th class="p-2 border border-gray-200 text-center">Có</th><th class="p-2 border border-gray-200 text-center">Không</th><th class="p-2 border border-gray-200">Ghi chú</th></tr>
+                </thead>
+                <tbody id="medical-checklist"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 border-t border-pink-100 pt-4 mt-4">
+            <div><label class="text-xs text-gray-500 font-bold">Ngày thực hiện (App)</label><input type="date" id="visitDate" onchange="autoNextDate()" class="w-full p-2 border border-pink-200 rounded-lg outline-none"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Lịch dặm lại (App)</label><input type="date" id="nextDate" class="w-full p-2 border border-pink-200 rounded-lg outline-none text-pink-600"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Nơi lập hồ sơ (In PDF)</label><input type="text" id="location" value="Phú Vinh" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Ngày ký (In PDF)</label><input type="date" id="signDate" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300 text-gray-500"></div>
+          </div>
+
+          <div class="mt-4 p-4 bg-pink-50 rounded-lg border border-pink-100 text-sm text-gray-700 italic">
+            <p class="font-bold text-pink-800 mb-1 not-italic"><i class="fas fa-info-circle mr-1"></i> Lời cam đoan của khách hàng (Sẽ in vào PDF):</p>
+            "Tôi cam đoan những điều trên là đúng sự thật, nếu sai tôi sẽ hoàn toàn chịu trách nhiệm."
+          </div>
+
+          <div class="flex flex-wrap gap-3 mt-6">
+            <button onclick="clearForm()" class="bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-bold shadow hover:bg-gray-200 transition"><i class="fas fa-plus mr-1"></i> Tạo Mới</button>
+            <button onclick="submitData()" id="btn-submit" class="flex-1 bg-pink-600 text-white py-3 rounded-lg font-bold shadow-lg hover:bg-pink-700 transition"><i class="fas fa-cloud-upload-alt mr-1"></i> Lưu Thông Tin</button>
+            <button onclick="previewPDF()" class="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-gray-900 transition"><i class="fas fa-file-pdf mr-2"></i> In Hồ Sơ PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB DANH SÁCH (MỚI) -->
+    <div id="tab-list" class="tab-content hidden">
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-pink-50">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+          <h2 class="text-xl brand-font text-pink-600"><i class="fas fa-list-alt mr-2"></i>Quản Lý & Thu Tiền</h2>
+          <input type="text" id="searchInput" onkeyup="renderClientList()" placeholder="Tìm tên, SĐT..." class="p-2 border border-pink-200 rounded-lg w-full md:w-64 outline-none focus:ring-2 focus:ring-pink-300">
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left border border-gray-200">
+            <thead class="bg-pink-50 text-gray-600">
+              <tr>
+                <th class="p-3 border cursor-pointer hover:bg-pink-100" onclick="sortClients('name')">Tên KH <i class="fas fa-sort ml-1"></i></th>
+                <th class="p-3 border">SĐT</th>
+                <th class="p-3 border">Dịch vụ</th>
+                <th class="p-3 border text-right cursor-pointer hover:bg-pink-100" onclick="sortClients('total')">Tổng <i class="fas fa-sort ml-1"></i></th>
+                <th class="p-3 border text-right">Đã thu</th>
+                <th class="p-3 border text-right">Còn nợ</th>
+                <th class="p-3 border text-center">Trạng thái</th>
+                <th class="p-3 border text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="client-table-body">
+              <!-- Render by JS -->
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-gray-400 mt-3 italic">* Danh sách này được lưu tạm trên thiết bị của bạn để tiện theo dõi và thu nốt tiền cọc.</p>
+      </div>
+    </div>
+
+    <!-- TAB NHẮC NHỞ -->
+    <div id="tab-reminder" class="tab-content hidden">
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-pink-50">
+        <h2 class="text-xl brand-font mb-4 text-pink-600"><i class="fas fa-bell mr-2"></i>Khách Cần Dặm Lại (7 ngày tới)</h2>
+        <div id="reminder-list" class="space-y-3">Đang tải lịch hẹn...</div>
+      </div>
+    </div>
+
+    <!-- TAB THỐNG KÊ -->
+    <div id="tab-stats" class="tab-content hidden">
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-pink-50">
+        <h2 class="text-xl brand-font mb-6 text-pink-600">Báo Cáo Tháng <span id="month-label"></span></h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-gradient-to-br from-pink-50 to-rose-100 p-5 rounded-xl text-center shadow-inner">
+            <i class="fas fa-users text-pink-400 text-2xl mb-2"></i>
+            <p class="text-gray-600 text-sm">Lượt khách</p>
+            <h3 id="stat-count" class="text-3xl font-black text-pink-700">0</h3>
+          </div>
+          <div class="bg-gradient-to-br from-purple-50 to-fuchsia-100 p-5 rounded-xl text-center shadow-inner">
+            <i class="fas fa-wallet text-purple-400 text-2xl mb-2"></i>
+            <p class="text-gray-600 text-sm">Doanh thu</p>
+            <h3 id="stat-revenue" class="text-xl font-black text-purple-700">0 đ</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BẢN IN PDF -->
+  <div id="pdf-template" class="contract-paper">
+    <div class="pdf-header">
+      <h1>THANH MAI ACADEMY – PHUN THÊU THẨM MỸ</h1>
+      <p>Trường cấp 2, Vinh Xuân, Phú Vinh, TP Huế</p>
+      <p>0355358487</p>
+    </div>
+    
+    <div class="pdf-title">HỒ SƠ KHÁCH HÀNG</div>
+    
+    <div class="info-line"><span class="info-label">Họ và tên:</span><div class="dotted-line" id="p-name"></div></div>
+    <div class="info-line"><span class="info-label">Địa chỉ:</span><div class="dotted-line" id="p-address"></div></div>
+    <div style="display: flex; gap: 20px;">
+      <div class="info-line" style="flex: 1;"><span class="info-label">Ngày sinh:</span><div class="dotted-line" id="p-dob"></div></div>
+      <div class="info-line" style="flex: 1;"><span class="info-label">Tình trạng:</span><div class="dotted-line" id="p-status"></div></div>
+    </div>
+    <div style="display: flex; gap: 20px;">
+      <div class="info-line" style="flex: 1;"><span class="info-label">Đăng ký dịch vụ:</span><div class="dotted-line" id="p-service"></div></div>
+      <div class="info-line" style="flex: 1;"><span class="info-label">Số điện thoại:</span><div class="dotted-line" id="p-contact"></div></div>
+    </div>
+    <div style="display: flex; gap: 20px;">
+      <div class="info-line" style="flex: 1;"><span class="info-label">Giá tiền:</span><div class="dotted-line" id="p-total"></div></div>
+      <div class="info-line" style="flex: 1;"><span class="info-label">Tiền sử bệnh lý:</span><div class="dotted-line" id="p-history"></div></div>
+    </div>
+
+    <table class="med-table">
+      <thead>
+        <tr><th style="width: 45%;"></th><th style="width: 10%;">CÓ</th><th style="width: 15%;">KHÔNG</th><th style="width: 30%;">GHI CHÚ</th></tr>
+      </thead>
+      <tbody id="p-medical-body"></tbody>
+    </table>
+
+    <div class="pdf-footer">
+      <div class="pdf-footer-left">
+        Tôi cam đoan những điều trên là đúng<br>
+        sự thật, nếu sai tôi sẽ hoàn toàn chịu<br>
+        trách nhiệm
+      </div>
+      <div class="pdf-footer-right">
+        <div style="font-style: italic; margin-bottom: 5px;" id="p-sign-date">Phú Vinh, ngày ... tháng .... năm ....</div>
+        <div style="font-style: italic;">Ký tên</div>
+        <div style="margin-top: 50px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // BẠN DÁN LINK API CỦA WEB APP GOOGLE SHEETS VÀO ĐÂY NHÉ
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5PFx1YGaPYpp-8OJpPqqWUy6KsS3gZA1kOYFxCQnAVwxrUYU8IUcsUIGX2iEJ8lQ/exec";
+
+    const medicalQuestions = [
+      "Đang có thai", "Đang cho con bú", "Đang trong thời kỳ kinh nguyệt",
+      "Tiền sử máu loãng, co giật, băng huyết,\ntiểu đường, huyết áp, tim mạch",
+      "Viêm gan A,B,C", "Bị phơi nhiễm HIV", "Từng bị dị ứng"
+    ];
+
+    // Khởi tạo biến cho LocalStorage (Danh sách tạm)
+    let localClients = JSON.parse(localStorage.getItem('spa_local_clients')) || [];
+    let currentSort = { key: 'date', asc: false };
+
+    window.onload = () => {
+      const tbody = document.getElementById('medical-checklist');
+      let html = '';
+      medicalQuestions.forEach((q, index) => {
+        let displayQ = q.replace(/\n/g, '<br>');
+        html += `
+          <tr>
+            <td class="p-2 border border-gray-200">${displayQ}</td>
+            <td class="p-2 border border-gray-200 text-center"><input type="radio" name="med_${index}" value="CÓ" class="text-pink-600 cursor-pointer"></td>
+            <td class="p-2 border border-gray-200 text-center"><input type="radio" name="med_${index}" value="KHÔNG" checked class="text-pink-600 cursor-pointer"></td>
+            <td class="p-2 border border-gray-200">
+              <textarea id="note_${index}" rows="1" class="w-full outline-none bg-transparent resize-none overflow-hidden" style="min-height: 24px;" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+      
+      document.getElementById('visitDate').valueAsDate = new Date();
+      autoNextDate();
+      renderClientList();
+    };
+
+    function showTab(id) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('tab-active', 'text-pink-700'));
+      document.getElementById('btn-' + id.split('-')[1]).classList.add('tab-active');
+      if(id === 'tab-reminder' || id === 'tab-stats') refreshData();
+      if(id === 'tab-list') renderClientList();
+    }
+
+    function autoNextDate() {
+      const vDate = new Date(document.getElementById('visitDate').value);
+      vDate.setMonth(vDate.getMonth() + 2);
+      document.getElementById('nextDate').value = vDate.toISOString().split('T')[0];
+    }
+
+    // TÍNH NĂNG MỚI: Định dạng tiền tệ cách nhau 3 số (1 000 000)
+    function formatPrice(input) {
+      let value = input.value.replace(/\D/g, ''); // Bỏ hết chữ và ký tự đặc biệt, chỉ giữ số
+      if (value !== '') {
+        // Dùng biểu thức chính quy để thêm khoảng trắng sau mỗi 3 số
+        input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      } else {
+        input.value = '';
+      }
+    }
+
+    // TÍNH NĂNG MỚI: Ẩn/Hiện ô nhập tiền cọc
+    function toggleDeposit() {
+      const type = document.getElementById('payType').value;
+      const depDiv = document.getElementById('depositDiv');
+      if(type === 'Đặt cọc') {
+        depDiv.classList.remove('hidden');
+      } else {
+        depDiv.classList.add('hidden');
+        document.getElementById('deposit').value = '';
+      }
+    }
+
+    // TÍNH NĂNG MỚI: Nút Clear Form
+    function clearForm() {
+      if(confirm("Bạn có chắc muốn xóa trắng biểu mẫu để tạo mới?")) {
+        document.querySelectorAll('input[type="text"], input[type="date"]').forEach(input => input.value = '');
+        document.getElementById('medical-checklist').querySelectorAll('input[value="KHÔNG"]').forEach(r => r.checked = true);
+        document.querySelectorAll('textarea').forEach(ta => ta.value = '');
+        document.getElementById('visitDate').valueAsDate = new Date();
+        autoNextDate();
+        document.getElementById('location').value = 'Phú Vinh';
+        document.getElementById('payType').value = 'Trả đủ';
+        toggleDeposit();
+      }
+    }
+
+    function submitData() {
+      if (!SCRIPT_URL.includes("/exec")) {
+        return alert("Vui lòng dán Link API vào biến SCRIPT_URL trong code HTML trước khi sử dụng!");
+      }
+
+      const name = document.getElementById('name').value;
+      if(!name) return alert("Vui lòng nhập tên khách hàng!");
+      
+      const btn = document.getElementById('btn-submit');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = "<i class='fas fa-spinner fa-spin mr-1'></i> Đang lưu...";
+      
+      // Chuyển đổi số tiền đã format (1 000 000) về dạng số (1000000) để gửi lên
+      const rawTotal = document.getElementById('total').value.replace(/\D/g, '');
+      const rawDeposit = document.getElementById('deposit').value.replace(/\D/g, '');
+      const typeVal = document.getElementById('payType').value;
+      
+      const parsedTotal = parseInt(rawTotal) || 0;
+      const parsedDeposit = typeVal === 'Đặt cọc' ? (parseInt(rawDeposit) || 0) : parsedTotal;
+
+      const obj = {
+        name: name,
+        contact: document.getElementById('contact').value,
+        service: document.getElementById('service').value,
+        visitDate: document.getElementById('visitDate').value,
+        nextDate: document.getElementById('nextDate').value,
+        total: parsedTotal,
+        deposit: parsedDeposit,
+        type: typeVal 
+      };
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(obj)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === "success") {
+          alert("Lưu thông tin thành công!");
+          // LƯU VÀO DANH SÁCH LOCAL ĐỂ THEO DÕI VÀ THU CỌC SAU NÀY
+          const localObj = { ...obj, id: Date.now() };
+          localClients.push(localObj);
+          localStorage.setItem('spa_local_clients', JSON.stringify(localClients));
+          renderClientList();
+          // LƯU Ý: Không xóa dữ liệu các ô nhập nữa theo yêu cầu của bạn.
+        } else {
+          alert("Lỗi từ server: " + data.message);
+        }
+      })
+      .catch(error => alert("Lỗi kết nối mạng: " + error))
+      .finally(() => btn.innerHTML = originalText);
+    }
+
+    // TÍNH NĂNG MỚI: Chức năng Danh sách, Sort và Thu nốt cọc
+    function renderClientList() {
+      const tbody = document.getElementById('client-table-body');
+      const searchTxt = document.getElementById('searchInput').value.toLowerCase();
+      
+      let filtered = localClients.filter(c => 
+        (c.name || '').toLowerCase().includes(searchTxt) || 
+        (c.contact || '').includes(searchTxt)
+      );
+
+      // Sorting
+      filtered.sort((a, b) => {
+        let valA = a[currentSort.key];
+        let valB = b[currentSort.key];
+        if(currentSort.key === 'total') {
+           valA = Number(valA); valB = Number(valB);
+        }
+        if(valA < valB) return currentSort.asc ? -1 : 1;
+        if(valA > valB) return currentSort.asc ? 1 : -1;
+        return 0;
+      });
+
+      if(filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500">Chưa có dữ liệu khách hàng.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => {
+        const total = Number(c.total) || 0;
+        const deposit = Number(c.deposit) || 0;
+        const remaining = total - deposit;
+        const isDebt = remaining > 0;
+        
+        return `
+          <tr class="border-b border-pink-50 hover:bg-pink-50 transition">
+            <td class="p-3 font-bold text-gray-700">${c.name}</td>
+            <td class="p-3">${c.contact}</td>
+            <td class="p-3 text-pink-600 font-medium">${c.service}</td>
+            <td class="p-3 text-right">${total.toLocaleString('vi-VN')}</td>
+            <td class="p-3 text-right text-green-600">${deposit.toLocaleString('vi-VN')}</td>
+            <td class="p-3 text-right font-bold ${isDebt ? 'text-red-500' : 'text-gray-400'}">${remaining > 0 ? remaining.toLocaleString('vi-VN') : '0'}</td>
+            <td class="p-3 text-center">
+              <span class="text-xs px-2 py-1 rounded font-bold ${isDebt ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">
+                ${isDebt ? 'Đặt cọc' : 'Trả đủ'}
+              </span>
+            </td>
+            <td class="p-3 text-center">
+              ${isDebt ? `<button onclick="payRemaining(${c.id})" class="bg-pink-500 text-white text-xs px-3 py-1 rounded shadow hover:bg-pink-600"><i class="fas fa-check-circle mr-1"></i>Thu nốt</button>` : `<span class="text-gray-300"><i class="fas fa-check"></i></span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function sortClients(key) {
+      if(currentSort.key === key) {
+        currentSort.asc = !currentSort.asc;
+      } else {
+        currentSort.key = key;
+        currentSort.asc = true;
+      }
+      renderClientList();
+    }
+
+    function payRemaining(id) {
+      if(confirm("Xác nhận khách đã thanh toán số tiền còn lại?")) {
+        const index = localClients.findIndex(c => c.id === id);
+        if(index > -1) {
+          localClients[index].deposit = localClients[index].total;
+          localClients[index].type = "Trả đủ";
+          localStorage.setItem('spa_local_clients', JSON.stringify(localClients));
+          renderClientList();
+          alert("Đã cập nhật trạng thái Trả đủ. (Lưu ý: Để đồng bộ hoàn toàn thay đổi này lên Google Sheets, bạn cần nâng cấp API App Script).");
+        }
+      }
+    }
+
+    const formatDate = (dateStr) => {
+        if(!dateStr) return "";
+        const d = new Date(dateStr);
+        return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    };
+
+    function previewPDF() {
+      const name = document.getElementById('name').value;
+      if(!name) return alert("Vui lòng nhập tên khách để in PDF");
+      
+      document.getElementById('p-name').innerText = name;
+      document.getElementById('p-address').innerText = document.getElementById('address').value;
+      document.getElementById('p-dob').innerText = formatDate(document.getElementById('dob').value);
+      document.getElementById('p-status').innerText = document.getElementById('status').value;
+      document.getElementById('p-service').innerText = document.getElementById('service').value;
+      document.getElementById('p-contact').innerText = document.getElementById('contact').value;
+      
+      // Lấy giá trị tiền đã loại bỏ khoảng trắng để in ra đúng chuẩn (ví dụ 1.000.000)
+      const rawTotal = document.getElementById('total').value.replace(/\D/g, '');
+      const typeVal = document.getElementById('payType').value;
+      let printTotal = rawTotal ? Number(rawTotal).toLocaleString('vi-VN') : '';
+      if(typeVal === 'Đặt cọc') {
+        const rawDep = document.getElementById('deposit').value.replace(/\D/g, '');
+        const inDep = rawDep ? Number(rawDep).toLocaleString('vi-VN') : '0';
+        printTotal += ` (Đã cọc: ${inDep})`;
+      }
+      document.getElementById('p-total').innerText = printTotal;
+      
+      document.getElementById('p-history').innerText = document.getElementById('history').value;
+
+      const loc = document.getElementById('location').value || 'Phú Vinh';
+      const sDate = document.getElementById('signDate').value;
+      let dateString = 'ngày ... tháng .... năm ....';
+      if(sDate) {
+        const d = new Date(sDate);
+        dateString = `ngày ${String(d.getDate()).padStart(2,'0')} tháng ${String(d.getMonth()+1).padStart(2,'0')} năm ${d.getFullYear()}`;
+      }
+      document.getElementById('p-sign-date').innerText = `${loc}, ${dateString}`;
+
+      const pMedicalBody = document.getElementById('p-medical-body');
+      let pdfRowsHtml = '';
+      
+      medicalQuestions.forEach((q, index) => {
+        const radioChecked = document.querySelector(`input[name="med_${index}"]:checked`);
+        const isYes = radioChecked && radioChecked.value === 'CÓ' ? 'X' : '';
+        const isNo = radioChecked && radioChecked.value === 'KHÔNG' ? 'X' : '';
+        
+        let note = document.getElementById(`note_${index}`).value;
+        note = note.replace(/\n/g, '<br>');
+        let printQ = q.replace(/\n/g, '<br>');
+        
+        pdfRowsHtml += `<tr><td>${printQ}</td><td style="font-weight: bold; font-family: sans-serif;">${isYes}</td><td style="font-weight: bold; font-family: sans-serif;">${isNo}</td><td style="text-align: left;">${note}</td></tr>`;
+      });
+      pMedicalBody.innerHTML = pdfRowsHtml;
+
+      const element = document.getElementById('pdf-template');
+      element.style.display = 'block';
+      const opt = { 
+        margin: 0,
+        filename: 'HoSoKhachHang_' + name + '.pdf', 
+        image: { type: 'jpeg', quality: 0.98 }, 
+        html2canvas: { scale: 2, scrollY: 0 }, 
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } 
+      };
+      
+      setTimeout(() => {
+        html2pdf().set(opt).from(element).save().then(() => { 
+          element.style.display = 'none'; 
+        });
+      }, 150);
+    }
+
+    function refreshData() {
+      if (!SCRIPT_URL.includes("/exec")) return;
+
+      document.getElementById('month-label').innerText = (new Date().getMonth() + 1);
+      document.getElementById('reminder-list').innerHTML = "Đang lấy dữ liệu từ Google Sheets...";
+      
+      fetch(SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('stat-count').innerText = data.stats.count;
+          document.getElementById('stat-revenue').innerText = data.stats.revenue.toLocaleString('vi-VN') + " đ";
+          
+          const list = document.getElementById('reminder-list');
+          if(data.reminders.length === 0) {
+            list.innerHTML = "<p class='text-center text-gray-400 mt-5 italic'>Không có khách dặm lại trong 7 ngày tới.</p>";
+          } else {
+            list.innerHTML = data.reminders.map(r => `
+              <div class="p-4 bg-white border-l-4 border-pink-500 rounded-r-lg shadow-sm mb-3 flex justify-between items-center">
+                <div>
+                  <p class="font-bold text-gray-800">${r.name}</p>
+                  <p class="text-xs text-pink-600 font-bold">${r.service}</p>
+                  <p class="text-sm text-gray-500"><i class="fas fa-phone-alt text-xs mr-1"></i> ${r.contact}</p>
+                </div>
+                <div class="text-right">
+                  <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded font-bold">Lịch hẹn</span>
+                  <p class="text-sm font-bold mt-1 text-gray-700">${r.date}</p>
+                </div>
+              </div>
+            `).join('');
+          }
+        })
+        .catch(error => {
+          document.getElementById('reminder-list').innerHTML = "<p class='text-red-500'>Lỗi tải dữ liệu. Hãy kiểm tra kết nối mạng hoặc Link API.</p>";
+        });
+    }
+  </script>
+</body>
+</html>
