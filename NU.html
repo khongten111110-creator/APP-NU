@@ -30,13 +30,28 @@
     .pdf-header p { font-size: 14px; margin: 2px 0; }
     .pdf-title { font-size: 18px; font-weight: bold; text-align: center; margin: 15px 0; }
     
-    .info-line { display: flex; margin-bottom: 8px; font-size: 15px; align-items: flex-end;}
-    .info-label { white-space: nowrap; margin-right: 5px; }
-    .dotted-line { flex-grow: 1; border-bottom: 1px dotted #000; padding-bottom: 2px; min-height: 18px;}
+    /* Cấu trúc dòng thông tin trên PDF */
+    .info-line { display: flex; margin-bottom: 12px; font-size: 15px; align-items: flex-end;}
+    .info-label { white-space: nowrap; margin-right: 5px; color: #333; }
     
+    /* Đoạn mã xử lý in đậm nội dung nhập và đẩy chữ cách xa dấu hai chấm (:) */
+    .dotted-line { 
+      flex-grow: 1; 
+      border-bottom: 1px dotted #000; 
+      padding-bottom: 2px; 
+      min-height: 18px;
+      font-weight: bold;       /* Tự động IN ĐẬM tất cả nội dung điền vào dòng */
+      padding-left: 15px;      /* Đẩy chữ dịch sang phải, cách xa dấu : một khoảng thoáng đãng */
+      color: #000;             /* Đảm bảo màu chữ đen đậm rõ nét */
+    }
+    
+    /* Cấu trúc bảng khảo sát sức khỏe trên PDF */
     .med-table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; font-size: 14px;}
     .med-table th, .med-table td { border: 1px solid #000; padding: 5px; text-align: center; vertical-align: top;}
     .med-table td:first-child { text-align: left; }
+    
+    /* Tự động IN ĐẬM cả phần nội dung Ghi chú bệnh lý điền thêm trong bảng */
+    .med-table td:last-child { text-align: left; font-weight: bold; padding-left: 8px; }
     
     .pdf-footer { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 15px; font-size: 14px; }
     .pdf-footer-left { width: 45%; text-align: left; line-height: 1.3; padding-left: 2px;}
@@ -66,17 +81,18 @@
         
         <div class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><label class="text-xs text-gray-500 font-bold">Họ và tên</label><input type="text" id="name" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
-            <div><label class="text-xs text-gray-500 font-bold">Địa chỉ</label><input type="text" id="address" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Họ và tên</label><input type="text" id="name" oninput="formatName(this)" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300 font-bold uppercase text-gray-800"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Địa chỉ</label><input type="text" id="address" oninput="formatAddress(this)" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            
             <div><label class="text-xs text-gray-500 font-bold">Ngày sinh</label><input type="date" id="dob" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
             <div><label class="text-xs text-gray-500 font-bold">Số điện thoại</label><input type="text" id="contact" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
-            <div><label class="text-xs text-gray-500 font-bold">Tình trạng (Mày,Môi...)</label><input type="text" id="status" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div><label class="text-xs text-gray-500 font-bold">Tình trạng (Môi/Mày....)</label><input type="text" id="status" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
             <div><label class="text-xs text-gray-500 font-bold">Đăng ký dịch vụ</label><input type="text" id="service" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
             <div><label class="text-xs text-gray-500 font-bold">Giá tiền (VNĐ)</label><input type="text" id="total" oninput="formatPrice(this)" placeholder="Ví dụ: 1 000 000" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300 font-bold text-pink-700"></div>
             <div><label class="text-xs text-gray-500 font-bold">Tiền sử bệnh lý (Chung)</label><input type="text" id="history" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
           </div>
 
-          <!-- Khu vực thanh toán mới -->
+          <!-- Khu vực thanh toán -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-pink-50 p-4 rounded-lg border border-pink-100">
             <div>
               <label class="text-xs text-gray-500 font-bold">Trạng thái thanh toán</label>
@@ -124,7 +140,7 @@
       </div>
     </div>
 
-    <!-- TAB DANH SÁCH (MỚI) -->
+    <!-- TAB DANH SÁCH -->
     <div id="tab-list" class="tab-content hidden">
       <div class="bg-white p-6 rounded-2xl shadow-lg border border-pink-50">
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -162,7 +178,7 @@
       </div>
     </div>
 
-    <!-- TAB THỐNG KÊ -->
+    <!-- TAB THỐNG KÊ DOANH THU -->
     <div id="tab-stats" class="tab-content hidden">
       <div class="bg-white p-6 rounded-2xl shadow-lg border border-pink-50">
         <h2 class="text-xl brand-font mb-6 text-pink-600">Báo Cáo Tháng <span id="month-label"></span></h2>
@@ -178,6 +194,26 @@
             <h3 id="stat-revenue" class="text-xl font-black text-purple-700">0 đ</h3>
           </div>
         </div>
+
+        <!-- BẢNG THỐNG KÊ & SORT DOANH THU TỪNG THÁNG -->
+        <div class="mt-8 border-t border-pink-100 pt-6">
+          <h3 class="font-bold text-pink-700 mb-4 text-sm"><i class="fas fa-chart-bar mr-2"></i>Chi Tiết Doanh Thu Từng Tháng</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left border border-gray-200">
+              <thead class="bg-pink-50 text-gray-600">
+                <tr>
+                  <th class="p-3 border cursor-pointer hover:bg-pink-100" onclick="sortMonthlyStats('month')">Tháng/Năm <i class="fas fa-sort ml-1"></i></th>
+                  <th class="p-3 border text-center">Tổng lượt khách</th>
+                  <th class="p-3 border text-right cursor-pointer hover:bg-pink-100" onclick="sortMonthlyStats('revenue')">Doanh thu <i class="fas fa-sort ml-1"></i></th>
+                </tr>
+              </thead>
+              <tbody id="monthly-stats-body">
+                <!-- Sẽ tự động render dữ liệu bằng Javascript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -242,6 +278,7 @@
     // Khởi tạo biến cho LocalStorage (Danh sách tạm)
     let localClients = JSON.parse(localStorage.getItem('spa_local_clients')) || [];
     let currentSort = { key: 'date', asc: false };
+    let monthlySort = { key: 'month', asc: false }; 
 
     window.onload = () => {
       const tbody = document.getElementById('medical-checklist');
@@ -272,6 +309,7 @@
       document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('tab-active', 'text-pink-700'));
       document.getElementById('btn-' + id.split('-')[1]).classList.add('tab-active');
       if(id === 'tab-reminder' || id === 'tab-stats') refreshData();
+      if(id === 'tab-stats') renderMonthlyStats(); 
       if(id === 'tab-list') renderClientList();
     }
 
@@ -280,19 +318,46 @@
       vDate.setMonth(vDate.getMonth() + 2);
       document.getElementById('nextDate').value = vDate.toISOString().split('T')[0];
     }
+    
+    function formatName(input) {
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const val = input.value;
+      const newVal = val.toUpperCase();
+      if (val !== newVal) {
+        input.value = newVal;
+        input.setSelectionRange(start, end);
+      }
+    }
 
-    // TÍNH NĂNG MỚI: Định dạng tiền tệ cách nhau 3 số (1 000 000)
+    // Tự động chuyển chữ cái đầu tiên của TỪNG TỪ trong Địa chỉ thành viết hoa
+    function formatAddress(input) {
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const val = input.value;
+      
+      if (val.length > 0) {
+        const newVal = val.split(' ').map(word => {
+          if (word.length === 0) return '';
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+
+        if (val !== newVal) {
+          input.value = newVal;
+          input.setSelectionRange(start, end);
+        }
+      }
+    }
+
     function formatPrice(input) {
-      let value = input.value.replace(/\D/g, ''); // Bỏ hết chữ và ký tự đặc biệt, chỉ giữ số
+      let value = input.value.replace(/\D/g, '');
       if (value !== '') {
-        // Dùng biểu thức chính quy để thêm khoảng trắng sau mỗi 3 số
         input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
       } else {
         input.value = '';
       }
     }
 
-    // TÍNH NĂNG MỚI: Ẩn/Hiện ô nhập tiền cọc
     function toggleDeposit() {
       const type = document.getElementById('payType').value;
       const depDiv = document.getElementById('depositDiv');
@@ -304,7 +369,6 @@
       }
     }
 
-    // TÍNH NĂNG MỚI: Nút Clear Form
     function clearForm() {
       if(confirm("Bạn có chắc muốn xóa trắng biểu mẫu để tạo mới?")) {
         document.querySelectorAll('input[type="text"], input[type="date"]').forEach(input => input.value = '');
@@ -330,7 +394,6 @@
       const originalText = btn.innerHTML;
       btn.innerHTML = "<i class='fas fa-spinner fa-spin mr-1'></i> Đang lưu...";
       
-      // Chuyển đổi số tiền đã format (1 000 000) về dạng số (1000000) để gửi lên
       const rawTotal = document.getElementById('total').value.replace(/\D/g, '');
       const rawDeposit = document.getElementById('deposit').value.replace(/\D/g, '');
       const typeVal = document.getElementById('payType').value;
@@ -357,12 +420,10 @@
       .then(data => {
         if(data.status === "success") {
           alert("Lưu thông tin thành công!");
-          // LƯU VÀO DANH SÁCH LOCAL ĐỂ THEO DÕI VÀ THU CỌC SAU NÀY
           const localObj = { ...obj, id: Date.now() };
           localClients.push(localObj);
           localStorage.setItem('spa_local_clients', JSON.stringify(localClients));
           renderClientList();
-          // LƯU Ý: Không xóa dữ liệu các ô nhập nữa theo yêu cầu của bạn.
         } else {
           alert("Lỗi từ server: " + data.message);
         }
@@ -371,7 +432,6 @@
       .finally(() => btn.innerHTML = originalText);
     }
 
-    // TÍNH NĂNG MỚI: Chức năng Danh sách, Sort và Thu nốt cọc
     function renderClientList() {
       const tbody = document.getElementById('client-table-body');
       const searchTxt = document.getElementById('searchInput').value.toLowerCase();
@@ -381,7 +441,6 @@
         (c.contact || '').includes(searchTxt)
       );
 
-      // Sorting
       filtered.sort((a, b) => {
         let valA = a[currentSort.key];
         let valB = b[currentSort.key];
@@ -465,7 +524,6 @@
       document.getElementById('p-service').innerText = document.getElementById('service').value;
       document.getElementById('p-contact').innerText = document.getElementById('contact').value;
       
-      // Lấy giá trị tiền đã loại bỏ khoảng trắng để in ra đúng chuẩn (ví dụ 1.000.000)
       const rawTotal = document.getElementById('total').value.replace(/\D/g, '');
       const typeVal = document.getElementById('payType').value;
       let printTotal = rawTotal ? Number(rawTotal).toLocaleString('vi-VN') : '';
@@ -554,6 +612,66 @@
         .catch(error => {
           document.getElementById('reminder-list').innerHTML = "<p class='text-red-500'>Lỗi tải dữ liệu. Hãy kiểm tra kết nối mạng hoặc Link API.</p>";
         });
+    }
+    
+    function renderMonthlyStats() {
+      const tbody = document.getElementById('monthly-stats-body');
+      if (!tbody) return;
+
+      const monthsMap = {};
+
+      localClients.forEach(c => {
+        if (!c.visitDate) return;
+        const monthKey = c.visitDate.substring(0, 7); 
+        
+        if (!monthsMap[monthKey]) {
+          monthsMap[monthKey] = { month: monthKey, count: 0, revenue: 0 };
+        }
+        monthsMap[monthKey].count += 1;
+        monthsMap[monthKey].revenue += (Number(c.total) || 0); 
+      });
+
+      let statsArray = Object.values(monthsMap);
+
+      statsArray.sort((a, b) => {
+        let valA = a[monthlySort.key];
+        let valB = b[monthlySort.key];
+
+        if (monthlySort.key === 'revenue') {
+          valA = Number(valA);
+          valB = Number(valB);
+        }
+
+        if (valA < valB) return monthlySort.asc ? -1 : 1;
+        if (valA > valB) return monthlySort.asc ? 1 : -1;
+        return 0;
+      });
+
+      if (statsArray.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-gray-500">Chưa có dữ liệu doanh thu tháng nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = statsArray.map(item => {
+        const [year, month] = item.month.split('-');
+        return `
+          <tr class="border-b border-pink-50 hover:bg-pink-50 transition">
+            <td class="p-3 font-bold text-gray-700">Tháng ${month}/${year}</td>
+            <td class="p-3 text-center text-gray-600">${item.count}</td>
+            <td class="p-3 text-right text-purple-700 font-bold">${item.revenue.toLocaleString('vi-VN')} đ</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function sortMonthlyStats(key) {
+      if (monthlySort.key === key) {
+        monthlySort.asc = !monthlySort.asc;
+      } else {
+        monthlySort.key = key;
+        monthlySort.asc = true;
+      }
+      renderMonthlyStats();
     }
   </script>
 </body>
