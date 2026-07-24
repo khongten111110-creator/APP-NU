@@ -2,7 +2,7 @@
   "name": "APP KHÁC HÀNG",
   "short_name": "APP KHÁCH HÀNG",
   "description": "Hệ thống lưu trữ thông tin khách hàng",
-  "start_url": "index.html",
+  "start_url": "NU.html",
   "display": "standalone",
   "background_color": "#f1f5f9",
   "theme_color": "#0ea5e9",
