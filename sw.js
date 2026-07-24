@@ -1,6 +1,6 @@
 const CACHE_NAME = 'app-khac-hang-v1';
 const ASSETS = [
-  'index.html',
+  'NU.html',
   'manifest.json',
   'icon-192.png',
   'icon-512.png'
