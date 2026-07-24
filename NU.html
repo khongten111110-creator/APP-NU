@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Cấu hình nhận diện App PWA (Rất quan trọng để cài đặt) -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Hiển thị icon trên tab của trình duyệt web (Favicon) -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+<!-- Hỗ trợ hiển thị icon đẹp nhất trên các thiết bị của Apple (iPhone/iPad) -->
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- Màu nền thanh trạng thái của app -->
+<meta name="theme-color" content="#0ea5e9">
   <meta charset="UTF-8">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -795,5 +807,15 @@
       document.getElementById('month-label').innerText = month + "/" + year;
     }
   </script>
+  <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // Nhớ đổi 'sw.js' thành tên file chứa code Service Worker của bạn
+          navigator.serviceWorker.register('sw.js') 
+            .then(reg => console.log('Đã đăng ký Service Worker thành công'))
+            .catch(err => console.log('Lỗi đăng ký:', err));
+        });
+      }
+    </script>
 </body>
 </html>
