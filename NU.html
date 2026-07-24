@@ -13,7 +13,6 @@
     
     .tab-active { border-bottom: 3px solid #db2777; color: #db2777; font-weight: bold; }
     
-    /* Thiết kế riêng cho bản in PDF */
     .contract-paper { 
       padding: 30px 40px; 
       background: white; 
@@ -30,27 +29,22 @@
     .pdf-header p { font-size: 14px; margin: 2px 0; }
     .pdf-title { font-size: 18px; font-weight: bold; text-align: center; margin: 15px 0; }
     
-    /* Cấu trúc dòng thông tin trên PDF */
     .info-line { display: flex; margin-bottom: 12px; font-size: 15px; align-items: flex-end;}
     .info-label { white-space: nowrap; margin-right: 5px; color: #333; }
     
-    /* Đoạn mã xử lý in đậm nội dung nhập và đẩy chữ cách xa dấu hai chấm (:) */
     .dotted-line { 
       flex-grow: 1; 
       border-bottom: 1px dotted #000; 
       padding-bottom: 2px; 
       min-height: 18px;
-      font-weight: bold;       /* Tự động IN ĐẬM tất cả nội dung điền vào dòng */
-      padding-left: 15px;      /* Đẩy chữ dịch sang phải, cách xa dấu : một khoảng thoáng đãng */
-      color: #000;             /* Đảm bảo màu chữ đen đậm rõ nét */
+      font-weight: bold; 
+      padding-left: 15px; 
+      color: #000;
     }
     
-    /* Cấu trúc bảng khảo sát sức khỏe trên PDF */
     .med-table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; font-size: 14px;}
     .med-table th, .med-table td { border: 1px solid #000; padding: 5px; text-align: center; vertical-align: top;}
     .med-table td:first-child { text-align: left; }
-    
-    /* Tự động IN ĐẬM cả phần nội dung Ghi chú bệnh lý điền thêm trong bảng */
     .med-table td:last-child { text-align: left; font-weight: bold; padding-left: 8px; }
     
     .pdf-footer { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 15px; font-size: 14px; }
@@ -87,12 +81,27 @@
             <div><label class="text-xs text-gray-500 font-bold">Ngày sinh</label><input type="date" id="dob" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
             <div><label class="text-xs text-gray-500 font-bold">Số điện thoại</label><input type="text" id="contact" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
             <div><label class="text-xs text-gray-500 font-bold">Tình trạng (Môi/Mày....)</label><input type="text" id="status" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
-            <div><label class="text-xs text-gray-500 font-bold">Đăng ký dịch vụ</label><input type="text" id="service" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
+            <div>
+  <label class="text-xs text-gray-500 font-bold">Đăng ký dịch vụ</label>
+  
+  <!-- Ô nhập liệu, kết nối với danh sách bên dưới qua thuộc tính list="service-options" -->
+  <input type="text" id="service" list="service-options" placeholder="Nhập hoặc chọn dịch vụ..." class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300">
+  
+  <!-- Danh sách các gợi ý -->
+  <datalist id="service-options">
+    <option value="Phun Môi">
+    <option value="Phun Mày">
+    <option value="Điêu Khắc Mày">
+    <option value="Phun Mí">
+    <option value="Dặm Lại Môi">
+    <option value="Dặm Lại Mày">
+    <option value="Xóa Xăm">
+  </datalist>
+</div>
             <div><label class="text-xs text-gray-500 font-bold">Giá tiền (VNĐ)</label><input type="text" id="total" oninput="formatPrice(this)" placeholder="Ví dụ: 1 000 000" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300 font-bold text-pink-700"></div>
             <div><label class="text-xs text-gray-500 font-bold">Tiền sử bệnh lý (Chung)</label><input type="text" id="history" class="w-full p-2 border border-pink-200 rounded-lg outline-none focus:ring-2 focus:ring-pink-300"></div>
           </div>
 
-          <!-- Khu vực thanh toán -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-pink-50 p-4 rounded-lg border border-pink-100">
             <div>
               <label class="text-xs text-gray-500 font-bold">Trạng thái thanh toán</label>
@@ -145,7 +154,10 @@
       <div class="bg-white p-6 rounded-2xl shadow-lg border border-pink-50">
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <h2 class="text-xl brand-font text-pink-600"><i class="fas fa-list-alt mr-2"></i>Quản Lý & Thu Tiền</h2>
-          <input type="text" id="searchInput" onkeyup="renderClientList()" placeholder="Tìm tên, SĐT..." class="p-2 border border-pink-200 rounded-lg w-full md:w-64 outline-none focus:ring-2 focus:ring-pink-300">
+          <div class="flex gap-2 w-full md:w-auto">
+            <input type="text" id="searchInput" onkeyup="renderClientList()" placeholder="Tìm tên, SĐT..." class="p-2 border border-pink-200 rounded-lg flex-1 md:w-64 outline-none focus:ring-2 focus:ring-pink-300">
+            <button onclick="refreshData()" class="bg-gray-100 p-2 rounded-lg text-gray-600 hover:bg-gray-200"><i class="fas fa-sync-alt"></i></button>
+          </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left border border-gray-200">
@@ -166,7 +178,7 @@
             </tbody>
           </table>
         </div>
-        <p class="text-xs text-gray-400 mt-3 italic">* Danh sách này được lưu tạm trên thiết bị của bạn để tiện theo dõi và thu nốt tiền cọc.</p>
+        <p class="text-xs text-gray-400 mt-3 italic">* Dữ liệu được đồng bộ trực tiếp từ Google Sheets.</p>
       </div>
     </div>
 
@@ -181,7 +193,13 @@
     <!-- TAB THỐNG KÊ DOANH THU -->
     <div id="tab-stats" class="tab-content hidden">
       <div class="bg-white p-6 rounded-2xl shadow-lg border border-pink-50">
-        <h2 class="text-xl brand-font mb-6 text-pink-600">Báo Cáo Tháng <span id="month-label"></span></h2>
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+  <h2 class="text-xl brand-font text-pink-600">Báo Cáo Tháng <span id="month-label"></span></h2>
+  <div class="flex items-center gap-2 mt-2 sm:mt-0">
+    <label class="text-sm font-bold text-gray-500">Xem tháng khác:</label>
+    <input type="month" id="monthFilter" onchange="filterStats()" class="p-2 border border-pink-200 rounded-lg outline-none text-pink-700 font-bold bg-white">
+  </div>
+</div>
         <div class="grid grid-cols-2 gap-4">
           <div class="bg-gradient-to-br from-pink-50 to-rose-100 p-5 rounded-xl text-center shadow-inner">
             <i class="fas fa-users text-pink-400 text-2xl mb-2"></i>
@@ -195,7 +213,6 @@
           </div>
         </div>
 
-        <!-- BẢNG THỐNG KÊ & SORT DOANH THU TỪNG THÁNG -->
         <div class="mt-8 border-t border-pink-100 pt-6">
           <h3 class="font-bold text-pink-700 mb-4 text-sm"><i class="fas fa-chart-bar mr-2"></i>Chi Tiết Doanh Thu Từng Tháng</h3>
           <div class="overflow-x-auto">
@@ -207,9 +224,7 @@
                   <th class="p-3 border text-right cursor-pointer hover:bg-pink-100" onclick="sortMonthlyStats('revenue')">Doanh thu <i class="fas fa-sort ml-1"></i></th>
                 </tr>
               </thead>
-              <tbody id="monthly-stats-body">
-                <!-- Sẽ tự động render dữ liệu bằng Javascript -->
-              </tbody>
+              <tbody id="monthly-stats-body"></tbody>
             </table>
           </div>
         </div>
@@ -267,7 +282,7 @@
 
   <script>
     // BẠN DÁN LINK API CỦA WEB APP GOOGLE SHEETS VÀO ĐÂY NHÉ
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5PFx1YGaPYpp-8OJpPqqWUy6KsS3gZA1kOYFxCQnAVwxrUYU8IUcsUIGX2iEJ8lQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQ8i8aS23pTyLL3vAozdWTxUPrQ-A4zpnPlXrSLCoJS6KCLHxJv6D6ZwbvBOvLbtyw/exec";
 
     const medicalQuestions = [
       "Đang có thai", "Đang cho con bú", "Đang trong thời kỳ kinh nguyệt",
@@ -275,8 +290,8 @@
       "Viêm gan A,B,C", "Bị phơi nhiễm HIV", "Từng bị dị ứng"
     ];
 
-    // Khởi tạo biến cho LocalStorage (Danh sách tạm)
-    let localClients = JSON.parse(localStorage.getItem('spa_local_clients')) || [];
+    // Thay thế biến local bằng serverClients
+    let serverClients = [];
     let currentSort = { key: 'date', asc: false };
     let monthlySort = { key: 'month', asc: false }; 
 
@@ -300,7 +315,7 @@
       
       document.getElementById('visitDate').valueAsDate = new Date();
       autoNextDate();
-      renderClientList();
+      refreshData(); // Gọi để tải dữ liệu từ Google Sheets ngay khi mở trang
     };
 
     function showTab(id) {
@@ -308,7 +323,8 @@
       document.getElementById(id).classList.remove('hidden');
       document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('tab-active', 'text-pink-700'));
       document.getElementById('btn-' + id.split('-')[1]).classList.add('tab-active');
-      if(id === 'tab-reminder' || id === 'tab-stats') refreshData();
+      
+      // Load lại giao diện mượt mà hơn
       if(id === 'tab-stats') renderMonthlyStats(); 
       if(id === 'tab-list') renderClientList();
     }
@@ -330,7 +346,6 @@
       }
     }
 
-    // Tự động chuyển chữ cái đầu tiên của TỪNG TỪ trong Địa chỉ thành viết hoa
     function formatAddress(input) {
       const start = input.selectionStart;
       const end = input.selectionEnd;
@@ -382,6 +397,7 @@
       }
     }
 
+    // --- HÀM LƯU DỮ LIỆU ---
     function submitData() {
       if (!SCRIPT_URL.includes("/exec")) {
         return alert("Vui lòng dán Link API vào biến SCRIPT_URL trong code HTML trước khi sử dụng!");
@@ -402,6 +418,7 @@
       const parsedDeposit = typeVal === 'Đặt cọc' ? (parseInt(rawDeposit) || 0) : parsedTotal;
 
       const obj = {
+        action: 'add',
         name: name,
         contact: document.getElementById('contact').value,
         service: document.getElementById('service').value,
@@ -420,10 +437,7 @@
       .then(data => {
         if(data.status === "success") {
           alert("Lưu thông tin thành công!");
-          const localObj = { ...obj, id: Date.now() };
-          localClients.push(localObj);
-          localStorage.setItem('spa_local_clients', JSON.stringify(localClients));
-          renderClientList();
+          refreshData(); // Lấy dữ liệu mới nhất từ Google Sheets ngay sau khi lưu
         } else {
           alert("Lỗi từ server: " + data.message);
         }
@@ -432,14 +446,74 @@
       .finally(() => btn.innerHTML = originalText);
     }
 
+    // --- HÀM TẢI & ĐỒNG BỘ DỮ LIỆU TỪ GOOGLE SHEETS ---
+    function refreshData() {
+      if (!SCRIPT_URL.includes("/exec")) return;
+
+      document.getElementById('month-label').innerText = (new Date().getMonth() + 1);
+      document.getElementById('reminder-list').innerHTML = "Đang lấy dữ liệu từ Google Sheets...";
+      document.getElementById('client-table-body').innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Đang đồng bộ dữ liệu từ Sheet...</td></tr>`;
+      
+      fetch(SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('stat-count').innerText = data.stats.count;
+          document.getElementById('stat-revenue').innerText = data.stats.revenue.toLocaleString('vi-VN') + " đ";
+          
+          // Render Nhắc Nhở
+          const list = document.getElementById('reminder-list');
+          if(data.reminders.length === 0) {
+            list.innerHTML = "<p class='text-center text-gray-400 mt-5 italic'>Không có khách dặm lại trong 7 ngày tới.</p>";
+          } else {
+            list.innerHTML = data.reminders.map(r => `
+              <div class="p-4 bg-white border-l-4 border-pink-500 rounded-r-lg shadow-sm mb-3 flex justify-between items-center">
+                <div>
+                  <p class="font-bold text-gray-800">${r.name}</p>
+                  <p class="text-xs text-pink-600 font-bold">${r.service}</p>
+                  <p class="text-sm text-gray-500"><i class="fas fa-phone-alt text-xs mr-1"></i> ${r.contact}</p>
+                </div>
+                <div class="text-right">
+                  <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded font-bold">Lịch hẹn</span>
+                  <p class="text-sm font-bold mt-1 text-gray-700">${r.date}</p>
+                </div>
+              </div>
+            `).join('');
+          }
+
+          // Cập nhật Danh sách Server Clients
+          serverClients = data.clients || [];
+          renderClientList();
+          renderMonthlyStats();
+        })
+        .catch(error => {
+          document.getElementById('reminder-list').innerHTML = "<p class='text-red-500'>Lỗi tải dữ liệu. Hãy kiểm tra kết nối mạng hoặc Link API.</p>";
+          document.getElementById('client-table-body').innerHTML = `<tr><td colspan="8" class="p-4 text-center text-red-500">Lỗi đồng bộ dữ liệu.</td></tr>`;
+        });
+    }
+
+    // --- HIỂN THỊ DANH SÁCH ---
+    // Hàm phụ trợ: Xóa dấu tiếng Việt
+    function removeAccents(str) {
+      if (!str) return '';
+      return str.normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    }
+
+    // --- HIỂN THỊ DANH SÁCH ---
     function renderClientList() {
       const tbody = document.getElementById('client-table-body');
-      const searchTxt = document.getElementById('searchInput').value.toLowerCase();
       
-      let filtered = localClients.filter(c => 
-        (c.name || '').toLowerCase().includes(searchTxt) || 
-        (c.contact || '').includes(searchTxt)
-      );
+      // Lấy từ khóa, xóa dấu và chuyển thành chữ thường
+      const searchTxt = removeAccents(document.getElementById('searchInput').value).toLowerCase();
+      
+      let filtered = serverClients.filter(c => {
+        // Lấy tên khách hàng, xóa dấu và chuyển thành chữ thường
+        const normalizedName = removeAccents(c.name).toLowerCase();
+        const contactStr = (c.contact || '').toString();
+        
+        return normalizedName.includes(searchTxt) || contactStr.includes(searchTxt);
+      });
 
       filtered.sort((a, b) => {
         let valA = a[currentSort.key];
@@ -477,13 +551,15 @@
               </span>
             </td>
             <td class="p-3 text-center">
-              ${isDebt ? `<button onclick="payRemaining(${c.id})" class="bg-pink-500 text-white text-xs px-3 py-1 rounded shadow hover:bg-pink-600"><i class="fas fa-check-circle mr-1"></i>Thu nốt</button>` : `<span class="text-gray-300"><i class="fas fa-check"></i></span>`}
+              <div class="flex justify-center items-center gap-2">
+                ${isDebt ? `<button onclick="payRemaining(${c.rowIndex}, ${total})" class="bg-pink-500 text-white text-xs px-2 py-1 rounded shadow hover:bg-pink-600" title="Thu nốt"><i class="fas fa-check-circle"></i></button>` : `<span class="text-gray-300 w-6"><i class="fas fa-check"></i></span>`}
+                <button onclick="deleteClient(${c.rowIndex})" class="bg-red-500 text-white text-xs px-2 py-1 rounded shadow hover:bg-red-600" title="Xóa dòng"><i class="fas fa-trash"></i></button>
+              </div>
             </td>
           </tr>
         `;
       }).join('');
     }
-
     function sortClients(key) {
       if(currentSort.key === key) {
         currentSort.asc = !currentSort.asc;
@@ -494,24 +570,69 @@
       renderClientList();
     }
 
-    function payRemaining(id) {
-      if(confirm("Xác nhận khách đã thanh toán số tiền còn lại?")) {
-        const index = localClients.findIndex(c => c.id === id);
-        if(index > -1) {
-          localClients[index].deposit = localClients[index].total;
-          localClients[index].type = "Trả đủ";
-          localStorage.setItem('spa_local_clients', JSON.stringify(localClients));
-          renderClientList();
-          alert("Đã cập nhật trạng thái Trả đủ. (Lưu ý: Để đồng bộ hoàn toàn thay đổi này lên Google Sheets, bạn cần nâng cấp API App Script).");
-        }
+    // --- HÀM THU NỐT TIỀN ---
+    function payRemaining(rowIndex, total) {
+      if(confirm("Xác nhận khách đã thanh toán số tiền còn lại? (Dữ liệu sẽ được cập nhật lên Google Sheets)")) {
+        
+        // Hiệu ứng chờ nhỏ
+        const btnEvent = event.currentTarget;
+        const oldHtml = btnEvent.innerHTML;
+        btnEvent.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+        
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'update', rowIndex: rowIndex, deposit: total, type: 'Trả đủ' })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.status === "success") {
+            alert("Đã cập nhật trạng thái Trả đủ!");
+            refreshData(); // Gọi hàm load lại dữ liệu mới nhất
+          } else {
+            alert("Lỗi server: " + data.message);
+          }
+        })
+        .catch(error => alert("Lỗi kết nối: " + error))
+        .finally(() => btnEvent.innerHTML = oldHtml);
       }
     }
 
-    const formatDate = (dateStr) => {
-        if(!dateStr) return "";
-        const d = new Date(dateStr);
-        return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-    };
+    // --- HÀM XÓA KHÁCH HÀNG ---
+    // --- HÀM XÓA KHÁCH HÀNG ---
+    function deleteClient(rowIndex) {
+      if(confirm("Bạn có chắc chắn muốn XÓA khách hàng này không? (Dữ liệu sẽ bị xóa hoàn toàn khỏi Google Sheets)")) {
+        
+        // 1. Hiện bảng nhập mật khẩu
+        var matKhau = prompt("Vui lòng nhập mật khẩu để xác nhận xóa:", "");
+        
+        // 2. Kiểm tra mật khẩu
+        if (matKhau === "1234") {
+            const btnEvent = event.currentTarget;
+            const oldHtml = btnEvent.innerHTML;
+            btnEvent.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+
+            fetch(SCRIPT_URL, {
+              method: 'POST',
+              body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if(data.status === "success") {
+                alert("Đã xóa dòng thành công!");
+                refreshData(); // Đồng bộ lại list
+              } else {
+                alert("Lỗi: " + data.message);
+              }
+            })
+            .catch(error => alert("Lỗi mạng: " + error))
+            .finally(() => btnEvent.innerHTML = oldHtml);
+            
+        } else if (matKhau !== null && matKhau !== "") {
+            // 3. Báo lỗi nếu sai mật khẩu
+            alert("Mật khẩu không đúng! Thao tác xóa đã bị hủy.");
+        }
+      }
+    }
 
     function previewPDF() {
       const name = document.getElementById('name').value;
@@ -577,42 +698,6 @@
         });
       }, 150);
     }
-
-    function refreshData() {
-      if (!SCRIPT_URL.includes("/exec")) return;
-
-      document.getElementById('month-label').innerText = (new Date().getMonth() + 1);
-      document.getElementById('reminder-list').innerHTML = "Đang lấy dữ liệu từ Google Sheets...";
-      
-      fetch(SCRIPT_URL)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('stat-count').innerText = data.stats.count;
-          document.getElementById('stat-revenue').innerText = data.stats.revenue.toLocaleString('vi-VN') + " đ";
-          
-          const list = document.getElementById('reminder-list');
-          if(data.reminders.length === 0) {
-            list.innerHTML = "<p class='text-center text-gray-400 mt-5 italic'>Không có khách dặm lại trong 7 ngày tới.</p>";
-          } else {
-            list.innerHTML = data.reminders.map(r => `
-              <div class="p-4 bg-white border-l-4 border-pink-500 rounded-r-lg shadow-sm mb-3 flex justify-between items-center">
-                <div>
-                  <p class="font-bold text-gray-800">${r.name}</p>
-                  <p class="text-xs text-pink-600 font-bold">${r.service}</p>
-                  <p class="text-sm text-gray-500"><i class="fas fa-phone-alt text-xs mr-1"></i> ${r.contact}</p>
-                </div>
-                <div class="text-right">
-                  <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded font-bold">Lịch hẹn</span>
-                  <p class="text-sm font-bold mt-1 text-gray-700">${r.date}</p>
-                </div>
-              </div>
-            `).join('');
-          }
-        })
-        .catch(error => {
-          document.getElementById('reminder-list').innerHTML = "<p class='text-red-500'>Lỗi tải dữ liệu. Hãy kiểm tra kết nối mạng hoặc Link API.</p>";
-        });
-    }
     
     function renderMonthlyStats() {
       const tbody = document.getElementById('monthly-stats-body');
@@ -620,9 +705,15 @@
 
       const monthsMap = {};
 
-      localClients.forEach(c => {
+      serverClients.forEach(c => {
         if (!c.visitDate) return;
-        const monthKey = c.visitDate.substring(0, 7); 
+        
+        const dateObj = new Date(c.visitDate);
+        if(isNaN(dateObj)) return; // Bỏ qua nếu dòng trắng hoặc lỗi ngày
+        
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const monthKey = `${year}-${month}`;
         
         if (!monthsMap[monthKey]) {
           monthsMap[monthKey] = { month: monthKey, count: 0, revenue: 0 };
@@ -672,6 +763,36 @@
         monthlySort.asc = true;
       }
       renderMonthlyStats();
+    }
+    // --- HÀM LỌC DOANH THU THEO THÁNG CỤ THỂ ---
+    function filterStats() {
+      const filterVal = document.getElementById('monthFilter').value; // Lấy dữ liệu định dạng YYYY-MM
+      if (!filterVal) return;
+      
+      const [year, month] = filterVal.split('-');
+      let count = 0;
+      let revenue = 0;
+      
+      // Duyệt qua toàn bộ danh sách khách hàng đã tải về
+      serverClients.forEach(c => {
+        if (!c.visitDate) return;
+        const dateObj = new Date(c.visitDate);
+        if (isNaN(dateObj)) return; // Bỏ qua nếu dữ liệu ngày bị lỗi
+        
+        const cYear = dateObj.getFullYear().toString();
+        const cMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
+        
+        // Nếu khớp tháng và năm khách chọn thì cộng dồn doanh thu
+        if (cYear === year && cMonth === month) {
+          count++;
+          revenue += (Number(c.total) || 0);
+        }
+      });
+      
+      // Cập nhật ngay lập tức lên 2 ô hiển thị tổng số
+      document.getElementById('stat-count').innerText = count;
+      document.getElementById('stat-revenue').innerText = revenue.toLocaleString('vi-VN') + " đ";
+      document.getElementById('month-label').innerText = month + "/" + year;
     }
   </script>
 </body>
