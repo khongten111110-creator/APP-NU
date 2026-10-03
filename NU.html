@@ -2,6 +2,9 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -601,8 +604,11 @@
       document.getElementById('reminder-list').innerHTML = "Đang lấy dữ liệu từ Google Sheets...";
       document.getElementById('client-table-body').innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Đang đồng bộ dữ liệu từ Sheet...</td></tr>`;
       
-      fetch(SCRIPT_URL)
-        .then(response => response.json())
+      // Tạo đường dẫn mới đính kèm mốc thời gian thực để ép trình duyệt luôn xóa cache
+const cleanUrl = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + '_t=' + new Date().getTime();
+
+fetch(cleanUrl, { cache: 'no-store' })
+  .then(response => response.json())
         .then(data => {
           document.getElementById('stat-count').innerText = data.stats.count;
           document.getElementById('stat-revenue').innerText = data.stats.revenue.toLocaleString('vi-VN') + " đ";
