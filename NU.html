@@ -335,6 +335,38 @@
   </div>
 
   <script>
+  // Hàm tự động xóa sạch các loại Cache trong trình duyệt
+function clearBrowserCache() {
+  // 1. Xóa Local Storage và Session Storage (nếu có lưu dữ liệu cũ ở đây)
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // 2. Xóa bộ nhớ đệm Cache API (rất hay gặp nếu trình duyệt lưu cache file tĩnh/fetch)
+  if ('caches' in window) {
+    caches.keys().then(function(cacheNames) {
+      cacheNames.forEach(function(cacheName) {
+        caches.delete(cacheName);
+      });
+    });
+  }
+
+  // 3. Xóa Service Workers (nếu trang của bạn có cài đặt web app offline)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+}
+
+// Chạy lệnh xóa cache ngay khi trang vừa tải xong, sau đó mới gọi dữ liệu
+window.addEventListener('load', function() {
+  clearBrowserCache();
+  
+  // Gọi hàm lấy dữ liệu của bạn ở đây (ví dụ: refreshData())
+  // refreshData(); 
+});
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyja1D1CPWnxFQ4-KK_t5fksYPZRasWqIKQ2S9bxsmLKcis6DVO2xztRjWQLZUfEnJT/exec";
 
     const medicalQuestions = [
